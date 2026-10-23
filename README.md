@@ -8,7 +8,7 @@ It runs entirely in the browser: no install, no account, no server. **Your voice
 never leaves your device.** The interface is in Serbian by default, with a
 one-click switch to English.
 
-[![CI](https://github.com/<your-username>/prichalica/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/prichalica/actions/workflows/ci.yml)
+[![CI](https://github.com/vahidzekic/prichalica/actions/workflows/ci.yml/badge.svg)](https://github.com/vahidzekic/prichalica/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Features
@@ -31,7 +31,7 @@ one-click switch to English.
 Requires [Node.js](https://nodejs.org/) 20 or newer (only for the dev server and tests).
 
 ```bash
-git clone https://github.com/<your-username>/prichalica.git
+git clone https://github.com/vahidzekic/prichalica.git
 cd prichalica
 npm start
 ```

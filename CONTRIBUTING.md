@@ -5,7 +5,7 @@ Thanks for helping make the chatterbox chattier! 🐹
 ## Getting started
 
 ```bash
-git clone https://github.com/<your-username>/prichalica.git
+git clone https://github.com/vahidzekic/prichalica.git
 cd prichalica
 npm start      # http://localhost:5173
 npm test       # unit tests (Node 20+)
