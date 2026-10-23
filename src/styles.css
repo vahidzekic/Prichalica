@@ -5,11 +5,13 @@
   --muted: #7a6a5a;
   --accent: #f08a24;
   --accent-strong: #d26d0a;
+  --accent-soft: #fde6cc;
   --listen: #3aa676;
   --record: #e0483e;
   --meter-bg: #f1e6d6;
   --border: #ead9c2;
   --shadow: 0 10px 30px rgb(120 80 30 / 0.12);
+  --ground-shadow: rgb(90 60 20 / 0.18);
   --radius: 20px;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme: light dark;
@@ -21,9 +23,11 @@
     --surface: #2a221b;
     --text: #f6ece0;
     --muted: #b8a692;
+    --accent-soft: #4a3220;
     --meter-bg: #3a2f25;
     --border: #45382c;
     --shadow: 0 10px 30px rgb(0 0 0 / 0.4);
+    --ground-shadow: rgb(0 0 0 / 0.45);
   }
 }
 
@@ -39,19 +43,49 @@ body {
 }
 
 .app {
-  max-width: 560px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 32px 16px 48px;
+  padding: 20px 16px 48px;
   display: grid;
   gap: 24px;
 }
 
+/* --- Header and language switch --- */
+
 .app__header {
+  display: grid;
+  justify-items: center;
   text-align: center;
 }
 
+.lang {
+  justify-self: end;
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.lang button {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lang button[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+
 .app__header h1 {
-  margin: 0;
+  margin: 4px 0 0;
   font-size: clamp(2rem, 8vw, 2.75rem);
   letter-spacing: -0.02em;
 }
@@ -61,77 +95,224 @@ body {
   color: var(--muted);
 }
 
+/* --- Stage --- */
+
 .stage {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 32px 24px;
+  padding: 28px 20px;
   display: grid;
   justify-items: center;
   gap: 18px;
 }
 
-/* --- The character and its per-state animations --- */
+/* --- The character --- */
 
 .buddy {
-  font-size: clamp(7rem, 34vw, 10rem);
-  line-height: 1;
-  user-select: none;
-  transition: filter 0.3s, transform 0.3s;
+  --mouth: 0; /* 0..1, set every frame by main.js while speaking */
+  position: relative;
+  width: clamp(210px, 62vw, 290px);
+  aspect-ratio: 1;
+  padding-top: 24px; /* room to jump */
 }
 
-.buddy[data-state="idle"] {
-  filter: grayscale(0.6) opacity(0.7);
+.buddy__figure {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 90%;
+  transition: filter 0.4s;
 }
 
-.buddy[data-state="calibrating"],
-.buddy[data-state="listening"] {
-  animation: bob 2.4s ease-in-out infinite;
+.buddy__figure .avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 90%;
+  /* The whole head stretches a little as the mouth opens. */
+  transform: scale(calc(1 + var(--mouth, 0) * 0.05), calc(1 + var(--mouth, 0) * 0.07));
 }
 
-.buddy[data-state="recording"] {
-  transform: scale(1.12) rotate(-6deg);
+.buddy__shadow {
+  position: absolute;
+  left: 22%;
+  bottom: 0;
+  width: 56%;
+  height: 7%;
+  border-radius: 50%;
+  background: var(--ground-shadow);
+  filter: blur(3px);
 }
 
-.buddy[data-state="processing"] {
-  animation: think 0.5s ease-in-out infinite;
+/* Avatar parts (class names documented in src/avatars.js) */
+
+.avatar .eye,
+.avatar .pupil,
+.avatar .ear,
+.avatar .mouth-open,
+.avatar .jaw {
+  transform-box: fill-box;
 }
 
-.buddy[data-state="speaking"] {
-  animation: chatter 0.18s ease-in-out infinite alternate;
+.avatar .eye {
+  transform-origin: center;
+  transition: transform 0.12s ease-out;
 }
 
-@keyframes bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.avatar .pupil {
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.avatar .ear {
+  transform-origin: center bottom;
+}
+
+.avatar .mouth-open {
+  transform-origin: 50% 0;
+  transform: scaleY(var(--mouth, 0));
+}
+
+.avatar .mouth-closed {
+  opacity: calc(1 - var(--mouth, 0) * 2.5);
+}
+
+.avatar .jaw {
+  transform: translateY(calc(var(--mouth, 0) * 12px));
+}
+
+.avatar .cheek {
+  transition: opacity 0.3s;
+}
+
+/* Idle: dozing, sleepy half-closed eyes */
+.buddy[data-state="idle"] .buddy__figure {
+  filter: saturate(0.55);
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.buddy[data-state="idle"] .eye {
+  transform: scaleY(0.3);
+}
+
+/* Calibrating / listening: swaying and bobbing, head tilting side to side */
+.buddy[data-state="calibrating"] .buddy__figure,
+.buddy[data-state="listening"] .buddy__figure {
+  animation: sway 2.6s ease-in-out infinite;
+}
+
+.buddy[data-state="calibrating"] .buddy__shadow,
+.buddy[data-state="listening"] .buddy__shadow {
+  animation: shadow-bob 1.3s ease-in-out infinite;
+}
+
+/* Recording: leans in, eyes wide, ears wiggling */
+.buddy[data-state="recording"] .buddy__figure {
+  animation: lean-in 0.8s ease-in-out infinite alternate;
+}
+
+.buddy[data-state="recording"] .eye {
+  transform: scale(1.22);
+}
+
+.buddy[data-state="recording"] .ear {
+  animation: wiggle 0.22s ease-in-out infinite alternate;
+}
+
+/* Processing: wobbling, looking up while thinking */
+.buddy[data-state="processing"] .buddy__figure {
+  animation: think 0.5s ease-in-out infinite alternate;
+}
+
+.buddy[data-state="processing"] .pupil {
+  transform: translateY(-30%);
+}
+
+/* Speaking: hopping with squash and stretch, blushing */
+.buddy[data-state="speaking"] .buddy__figure {
+  animation: hop 0.46s ease-in-out infinite;
+}
+
+.buddy[data-state="speaking"] .buddy__shadow {
+  animation: shadow-hop 0.46s ease-in-out infinite;
+}
+
+.buddy[data-state="speaking"] .cheek {
+  opacity: 0.95;
+}
+
+.buddy[data-state="speaking"] .ear {
+  animation: wiggle 0.46s ease-in-out infinite alternate;
+}
+
+/* Blinking: last, so it wins over the per-state eye shapes */
+.buddy.is-blinking .eye {
+  transform: scaleY(0.08);
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1, 1) rotate(-2deg); }
+  50% { transform: scale(1.03, 0.98) rotate(2deg); }
+}
+
+@keyframes sway {
+  0%, 100% { transform: translateY(0) rotate(-7deg); }
+  25% { transform: translateY(-18px) rotate(0deg); }
+  50% { transform: translateY(0) rotate(7deg); }
+  75% { transform: translateY(-18px) rotate(0deg); }
+}
+
+@keyframes shadow-bob {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.75); opacity: 0.55; }
+}
+
+@keyframes lean-in {
+  from { transform: scale(1.12) rotate(-6deg) translateY(-4px); }
+  to { transform: scale(1.2) rotate(-2deg) translateY(-10px); }
+}
+
+@keyframes wiggle {
+  from { transform: rotate(-14deg); }
+  to { transform: rotate(14deg); }
 }
 
 @keyframes think {
-  0%, 100% { transform: rotate(0); }
-  50% { transform: rotate(4deg); }
+  from { transform: rotate(-12deg) translateY(-4px); }
+  to { transform: rotate(12deg) translateY(-10px); }
 }
 
-@keyframes chatter {
-  from { transform: scale(1, 1) rotate(-3deg); }
-  to { transform: scale(1.06, 0.94) rotate(3deg); }
+@keyframes hop {
+  0%, 100% { transform: translateY(0) scale(1.1, 0.9); }
+  45% { transform: translateY(-34px) scale(0.94, 1.08); }
+}
+
+@keyframes shadow-hop {
+  0%, 100% { transform: scale(1.12); opacity: 1; }
+  45% { transform: scale(0.55); opacity: 0.4; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .buddy {
+  .buddy__figure,
+  .buddy__shadow,
+  .avatar .ear {
     animation: none !important;
   }
 }
 
+/* --- Status, meter, button --- */
+
 .status {
   margin: 0;
   min-height: 1.5em;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   text-align: center;
 }
-
-/* --- Level meter --- */
 
 .meter {
   position: relative;
@@ -162,13 +343,11 @@ body {
   opacity: 0.6;
 }
 
-/* --- Start/Stop button --- */
-
 .toggle {
   font: inherit;
-  font-size: 1.15rem;
-  font-weight: 700;
-  min-width: 160px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  min-width: 170px;
   padding: 14px 28px;
   border: 0;
   border-radius: 999px;
@@ -186,13 +365,86 @@ body {
   transform: scale(0.97);
 }
 
-.toggle:focus-visible {
+.toggle[aria-pressed="true"] {
+  background: var(--muted);
+}
+
+button:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
 
-.toggle[aria-pressed="true"] {
-  background: var(--muted);
+/* --- Voice and character pickers --- */
+
+.picker {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+.picker__label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: center;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chip {
+  font: inherit;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: scale(1.06);
+}
+
+.chip__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.chips--avatars .chip {
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px 8px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+}
+
+.chips--avatars .chip__icon {
+  width: 46px;
+  height: 46px;
+}
+
+.chips--avatars .avatar {
+  width: 100%;
+  height: 100%;
 }
 
 /* --- Settings --- */
@@ -207,10 +459,6 @@ body {
 .settings summary {
   cursor: pointer;
   font-weight: 700;
-}
-
-.settings[open] summary {
-  margin-bottom: 12px;
 }
 
 .field {
@@ -229,19 +477,9 @@ body {
   color: var(--muted);
 }
 
-.field select,
 .field input[type="range"] {
   width: 100%;
-  font: inherit;
   accent-color: var(--accent);
-}
-
-.field select {
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
 }
 
 .app__footer {

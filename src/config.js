@@ -41,10 +41,10 @@ export const DEFAULT_CONFIG = Object.freeze({
 
   /** The funny-voice effect (see src/audio/effects.js). */
   effect: Object.freeze({
-    /** 'chipmunk' (faster and higher, like the classic toys), 'pitch' (higher, same speed) or 'none'. */
-    mode: 'chipmunk',
-    /** Pitch change in semitones; 12 is one octave up. */
-    semitones: 6,
+    /** 'toy' (faster and squeakier, like the classic toys), 'child', 'female', 'male' or 'robot'. */
+    voice: 'toy',
+    /** Extra pitch change on top of the voice preset, in semitones (12 = one octave). */
+    pitchOffset: 0,
   }),
 
   playback: Object.freeze({

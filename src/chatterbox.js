@@ -80,6 +80,11 @@ export class Chatterbox extends EventTarget {
     return this._running;
   }
 
+  /** Loudness of what the toy is saying right now (RMS, 0 when silent). Drives lip-sync. */
+  get outputLevel() {
+    return this._player?.getLevel() ?? 0;
+  }
+
   /** Opens the microphone and starts the listen → repeat loop. */
   async start() {
     if (this._running) return;

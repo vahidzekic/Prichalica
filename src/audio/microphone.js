@@ -26,7 +26,9 @@ export class Microphone {
   /** Asks for permission and starts streaming frames. Throws if access is denied. */
   async start() {
     if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error('This browser cannot access the microphone (a secure https:// or localhost page is required).');
+      const error = new Error('This browser cannot access the microphone (a secure https:// or localhost page is required).');
+      error.name = 'NotSupportedError';
+      throw error;
     }
 
     this.stream = await navigator.mediaDevices.getUserMedia({

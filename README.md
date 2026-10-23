@@ -1,11 +1,12 @@
-# Prichalica 🐹
+# Pričalica (Prichalica) 🐹
 
-**Prichalica** (Serbian/Croatian for *chatterbox*) is an open-source version of
-those talking toys (the hamster or parrot that repeats everything you say in a
+**Pričalica** (Serbian for *chatterbox*) is an open-source version of those
+talking toys (the hamster or parrot that repeats everything you say in a
 squeaky voice). Talk to it, pause, and it says it right back, only funnier.
 
 It runs entirely in the browser: no install, no account, no server. **Your voice
-never leaves your device.**
+never leaves your device.** The interface is in Serbian by default, with a
+one-click switch to English.
 
 [![CI](https://github.com/<your-username>/prichalica/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/prichalica/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -13,8 +14,13 @@ never leaves your device.**
 ## Features
 
 - 🎙️ **Hands-free.** Listens continuously, detects when you start and stop talking.
-- 🐿️ **Three voices.** *Chipmunk* (faster and higher, the classic toy sound),
-  *Squeaky* (higher pitch at normal speed) and *Plain echo*.
+- 🗣️ **Five voices.** *Toy* (faster and squeakier, the classic toy sound),
+  *Child*, *Female*, *Male* and *Robot*, plus a pitch fine-tune slider.
+- 🐸 **Animated characters.** Hamster, parrot, cat, frog and robot, drawn in SVG.
+  They blink, lip-sync to their own voice, and sway, lean in, wobble and hop
+  depending on whether they are listening, recording, thinking or talking.
+- 🌍 **Serbian and English.** Serbian (ekavian) is the default; adding a language
+  is one file.
 - 🔇 **Adapts to the room.** Measures background noise and only reacts to speech.
 - 🙉 **Doesn't talk to itself.** Ignores the microphone while it is speaking.
 - 📱 **Works everywhere** a modern browser does: desktop, Android, iPhone and iPad.
@@ -68,12 +74,15 @@ CALIBRATING ─▶ LISTENING ─▶ RECORDING ─▶ PROCESSING ─▶ SPEAKING 
 3. **Segmentation** (`src/audio/segmenter.js`). Keeps 300 ms of pre-roll so the
    first syllable isn't clipped, trims trailing silence, discards coughs and
    clicks, and caps recordings at 10 s.
-4. **Toy voice** (`src/audio/pitch-shift.js`, `src/audio/effects.js`).
-   *Chipmunk* resamples the buffer (like playing a tape too fast). *Squeaky*
-   time-stretches with WSOLA and then resamples, which raises pitch while keeping
-   the duration. The result is peak-normalised and faded to avoid clicks.
-5. **Playback and loop.** The buffer is played, the toy waits a short cooldown
-   so it doesn't hear its own echo, and goes back to listening.
+4. **Voice** (`src/audio/pitch-shift.js`, `src/audio/effects.js`).
+   *Toy* resamples the buffer (like playing a tape too fast). *Child*, *Female*
+   and *Male* time-stretch with WSOLA and then resample, which shifts pitch
+   (and the voice's apparent size) while keeping the duration. *Robot* adds
+   ring modulation and a metallic comb filter. The result is peak-normalised
+   and faded to avoid clicks.
+5. **Playback and loop.** The buffer is played through an analyser that drives
+   the character's mouth, the toy waits a short cooldown so it doesn't hear its
+   own echo, and goes back to listening.
 
 ## Configuration
 
@@ -86,15 +95,15 @@ The most useful ones:
 | `vad.releaseMs` | `700` | Length of the pause that ends your sentence. Lower = snappier, but may cut you off. |
 | `segmenter.minSpeechMs` | `250` | Ignore sounds shorter than this. |
 | `segmenter.maxSpeechMs` | `10000` | Longest recording. |
-| `effect.mode` | `'chipmunk'` | `'chipmunk'`, `'pitch'` or `'none'`. |
-| `effect.semitones` | `6` | Pitch shift; 12 = one octave higher. |
+| `effect.voice` | `'toy'` | `'toy'`, `'child'`, `'female'`, `'male'` or `'robot'` (presets in `src/audio/effects.js`). |
+| `effect.pitchOffset` | `0` | Extra semitones on top of the voice preset; 12 = one octave. |
 
 You can also embed the engine in your own page:
 
 ```js
 import { Chatterbox } from './src/chatterbox.js';
 
-const toy = new Chatterbox({ effect: { mode: 'pitch', semitones: 9 } });
+const toy = new Chatterbox({ effect: { voice: 'robot' } });
 toy.addEventListener('statechange', (e) => console.log(e.detail.state));
 button.onclick = () => toy.start(); // must be started from a user gesture
 ```
@@ -105,9 +114,11 @@ button.onclick = () => toy.start(); // must be started from a user gesture
 prichalica/
 ├── index.html                 # The page
 ├── src/
-│   ├── main.js                # UI wiring (buttons, sliders, meter, character)
+│   ├── main.js                # UI wiring (pickers, meter, language, lip-sync, blinking)
 │   ├── chatterbox.js          # State machine + listen/repeat event loop
 │   ├── config.js              # Every tunable number, documented
+│   ├── i18n.js                # Serbian and English strings
+│   ├── avatars.js             # SVG characters with animatable eyes, mouth, ears
 │   ├── styles.css
 │   └── audio/
 │       ├── microphone.js      # getUserMedia + AudioWorklet capture
@@ -115,8 +126,8 @@ prichalica/
 │       ├── vad.js             # Adaptive energy-based voice activity detection
 │       ├── segmenter.js       # Frames → utterances (pre-roll, trimming, limits)
 │       ├── pitch-shift.js     # Resampling + WSOLA pitch shifting
-│       ├── effects.js         # Voice modes, normalisation, fades
-│       └── player.js          # AudioBuffer playback
+│       ├── effects.js         # Voice presets, robot effect, normalisation, fades
+│       └── player.js          # AudioBuffer playback + output level for lip-sync
 ├── tests/                     # node:test unit tests with synthetic signals
 ├── scripts/serve.js           # Zero-dependency dev server
 └── .github/workflows/         # CI (tests) and GitHub Pages deployment

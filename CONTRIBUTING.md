@@ -27,13 +27,25 @@ There is no build step and no dependencies to install. Edit a file, reload the p
 - Match the existing style (see `.editorconfig`): 2-space indent, ES modules,
   JSDoc on exported functions.
 
+## Adding a language
+
+Copy the `en` block in `src/i18n.js`, translate every value, add the language
+code to `LANGUAGES`, and add a button with `data-lang="xx"` in `index.html`.
+`npm test` fails if any key is missing.
+
+## Adding a character
+
+Add an SVG body to `src/avatars.js` using the shared class names documented at
+the top of that file (`.eye`, `.mouth-open`, ...), plus a `character.<id>`
+string for every language. The stylesheet animates it automatically.
+
 ## Ideas welcome
 
-- More voices: robot (ring modulation), deep monster voice, echo/reverb.
+- More voices: deep monster voice, echo/reverb, whisper.
 - A neural VAD (e.g. Silero via onnxruntime-web) as an optional drop-in for
   `VoiceActivityDetector`.
 - Installable PWA / offline support.
-- Character artwork with a mouth that moves with the playback level.
+- More characters, or a Cyrillic option for the Serbian interface.
 
 ## Pull requests
 

@@ -1,69 +1,68 @@
 <!doctype html>
-<html lang="en">
+<html lang="sr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Prichalica (Chatterbox): talk to it and it repeats what you said in a funny voice, like a talking toy. Runs entirely in your browser." />
-    <title>Prichalica</title>
+    <meta name="description" content="Pričalica: pričaj joj i ona ponavlja tvoje reči smešnim glasom, kao igračka koja priča. Radi u potpunosti u pregledaču." />
+    <title>Pričalica</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐹</text></svg>" />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
     <main class="app">
       <header class="app__header">
-        <h1>Prichalica</h1>
-        <p class="tagline">Say something, then pause. I'll say it right back!</p>
+        <div class="lang" role="group" data-i18n-aria-label="language">
+          <button type="button" data-lang="sr">SR</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+        <h1 data-i18n="app.title">Pričalica</h1>
+        <p class="tagline" data-i18n="app.tagline"></p>
       </header>
 
-      <section class="stage" aria-label="Talking toy">
-        <div id="buddy" class="buddy" data-state="idle" aria-hidden="true">🐹</div>
-        <p id="status" class="status" role="status" aria-live="polite">Press Start and allow the microphone.</p>
+      <section class="stage">
+        <div id="buddy" class="buddy" data-state="idle">
+          <div id="buddy-figure" class="buddy__figure"></div>
+          <div class="buddy__shadow"></div>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
 
         <div class="meter" aria-hidden="true">
           <div id="meter-fill" class="meter__fill"></div>
           <div id="meter-threshold" class="meter__threshold" hidden></div>
         </div>
 
-        <button id="toggle" class="toggle" type="button">Start</button>
+        <button id="toggle" class="toggle" type="button" aria-pressed="false"></button>
+
+        <div class="picker">
+          <h2 id="voice-label" class="picker__label" data-i18n="voice.label"></h2>
+          <div id="voices" class="chips" role="group" aria-labelledby="voice-label"></div>
+        </div>
+
+        <div class="picker">
+          <h2 id="character-label" class="picker__label" data-i18n="character.label"></h2>
+          <div id="characters" class="chips chips--avatars" role="group" aria-labelledby="character-label"></div>
+        </div>
       </section>
 
       <details class="settings">
-        <summary>Settings</summary>
+        <summary data-i18n="settings.title"></summary>
 
         <label class="field">
-          <span>Character</span>
-          <select id="character">
-            <option value="🐹">Hamster</option>
-            <option value="🦜">Parrot</option>
-            <option value="🐱">Cat</option>
-            <option value="🐸">Frog</option>
-          </select>
+          <span><span data-i18n="settings.pitch"></span> <output id="pitch-value" for="pitch"></output></span>
+          <input id="pitch" type="range" min="-6" max="6" step="1" />
         </label>
 
         <label class="field">
-          <span>Voice</span>
-          <select id="mode">
-            <option value="chipmunk">Chipmunk (faster and higher)</option>
-            <option value="pitch">Squeaky (higher, same speed)</option>
-            <option value="none">Plain echo</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Pitch <output id="semitones-value" for="semitones"></output></span>
-          <input id="semitones" type="range" min="0" max="12" step="1" />
-        </label>
-
-        <label class="field">
-          <span>Trigger level <output id="sensitivity-value" for="sensitivity"></output></span>
+          <span><span data-i18n="settings.sensitivity"></span> <output id="sensitivity-value" for="sensitivity"></output></span>
           <input id="sensitivity" type="range" min="6" max="24" step="1" />
-          <small>How much louder than the room you need to be. Lower is more sensitive.</small>
+          <small data-i18n="settings.sensitivityHint"></small>
         </label>
       </details>
 
       <footer class="app__footer">
-        <p>Your voice never leaves this device. All audio is processed locally in the browser.</p>
-        <p>Open source under the MIT License.</p>
+        <p data-i18n="footer.privacy"></p>
+        <p data-i18n="footer.license"></p>
       </footer>
     </main>
 

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { pitchShift, resample, semitonesToRatio, timeStretch } from '../src/audio/pitch-shift.js';
-import { applyFades, applyToyVoice, normalizePeak, VoiceMode } from '../src/audio/effects.js';
+import { applyFades, applyToyVoice, normalizePeak, robotize, VOICES } from '../src/audio/effects.js';
 import { sine, zeroCrossingFrequency } from './helpers.js';
 
 const SAMPLE_RATE = 16000;
@@ -65,13 +65,57 @@ test('applyFades starts and ends at silence', () => {
   assert.equal(samples[500], 1);
 });
 
-test('applyToyVoice: every mode returns a playable buffer without mutating the input', () => {
+test('pitchShift: lowers pitch by an octave and keeps the duration', () => {
+  const input = tone();
+  const out = pitchShift(input, SAMPLE_RATE, -12);
+  near(out.length, input.length, 2);
+  near(zeroCrossingFrequency(out, SAMPLE_RATE), 220, 10);
+});
+
+test('robotize: ring modulation moves the energy away from the original pitch', () => {
+  // A 440 Hz tone ring-modulated at 50 Hz becomes 390 Hz + 490 Hz.
+  const out = robotize(tone(), SAMPLE_RATE, { carrierHz: 50, feedback: 0 });
+  const at = (f) => Math.abs(goertzel(out, SAMPLE_RATE, f));
+  assert.ok(at(390) > 10 * at(440));
+  assert.ok(at(490) > 10 * at(440));
+});
+
+test('applyToyVoice: every voice returns a playable buffer without mutating the input', () => {
   const input = tone();
   const before = input.slice();
-  for (const mode of Object.values(VoiceMode)) {
-    const out = applyToyVoice(input, SAMPLE_RATE, { mode, semitones: 6 });
-    assert.ok(out.length > 0, mode);
-    assert.ok(out.every((s) => Math.abs(s) <= 1), `${mode} clipped`);
+  for (const voice of Object.keys(VOICES)) {
+    const out = applyToyVoice(input, SAMPLE_RATE, { voice });
+    assert.ok(out.length > 0, voice);
+    assert.ok(out.every((s) => Math.abs(s) <= 1), `${voice} clipped`);
   }
   assert.deepEqual(input, before);
 });
+
+test('applyToyVoice: voices shift pitch in the expected direction', () => {
+  const pitchOf = (voice, pitchOffset = 0) =>
+    zeroCrossingFrequency(applyToyVoice(tone(), SAMPLE_RATE, { voice, pitchOffset }), SAMPLE_RATE);
+  assert.ok(pitchOf('male') < 440 && pitchOf('female') > 440);
+  assert.ok(pitchOf('child') > pitchOf('female'));
+  // The toy voice is sped up, so it is also shorter.
+  assert.ok(applyToyVoice(tone(), SAMPLE_RATE, { voice: 'toy' }).length < SAMPLE_RATE);
+  // pitchOffset fine-tunes on top of the preset.
+  assert.ok(pitchOf('female', 3) > pitchOf('female'));
+});
+
+test('applyToyVoice: unknown voices fall back to the toy voice', () => {
+  const out = applyToyVoice(tone(), SAMPLE_RATE, { voice: 'dragon' });
+  assert.deepEqual(out, applyToyVoice(tone(), SAMPLE_RATE, { voice: 'toy' }));
+});
+
+/** Magnitude of a single frequency bin (Goertzel algorithm). */
+function goertzel(signal, sampleRate, frequency) {
+  const coeff = 2 * Math.cos((2 * Math.PI * frequency) / sampleRate);
+  let s1 = 0;
+  let s2 = 0;
+  for (const x of signal) {
+    const s0 = x + coeff * s1 - s2;
+    s2 = s1;
+    s1 = s0;
+  }
+  return Math.sqrt(s1 * s1 + s2 * s2 - coeff * s1 * s2);
+}
