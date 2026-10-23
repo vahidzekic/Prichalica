@@ -5,6 +5,15 @@
   "type": "module",
   "private": true,
   "license": "MIT",
+  "author": "Vahid Zekić (https://github.com/vahidzekic)",
+  "homepage": "https://github.com/vahidzekic/Prichalica#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vahidzekic/Prichalica.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vahidzekic/Prichalica/issues"
+  },
   "keywords": [
     "web-audio",
     "voice-activity-detection",

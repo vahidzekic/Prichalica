@@ -2,11 +2,15 @@
 
 Thanks for helping make the chatterbox chattier! 🐹
 
+Prichalica is created and maintained by Vahid Zekić
+([@vahidzekic](https://github.com/vahidzekic)). Questions and ideas are welcome
+in [GitHub Issues](https://github.com/vahidzekic/Prichalica/issues).
+
 ## Getting started
 
 ```bash
-git clone https://github.com/vahidzekic/prichalica.git
-cd prichalica
+git clone https://github.com/vahidzekic/Prichalica.git
+cd Prichalica
 npm start      # http://localhost:5173
 npm test       # unit tests (Node 20+)
 ```

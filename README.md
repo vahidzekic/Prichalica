@@ -8,7 +8,7 @@ It runs entirely in the browser: no install, no account, no server. **Your voice
 never leaves your device.** The interface is in Serbian by default, with a
 one-click switch to English.
 
-[![CI](https://github.com/vahidzekic/prichalica/actions/workflows/ci.yml/badge.svg)](https://github.com/vahidzekic/prichalica/actions/workflows/ci.yml)
+[![CI](https://github.com/vahidzekic/Prichalica/actions/workflows/ci.yml/badge.svg)](https://github.com/vahidzekic/Prichalica/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Features
@@ -31,8 +31,8 @@ one-click switch to English.
 Requires [Node.js](https://nodejs.org/) 20 or newer (only for the dev server and tests).
 
 ```bash
-git clone https://github.com/vahidzekic/prichalica.git
-cd prichalica
+git clone https://github.com/vahidzekic/Prichalica.git
+cd Prichalica
 npm start
 ```
 
@@ -156,10 +156,14 @@ The included workflow (`.github/workflows/pages.yml`) deploys on every push.
 Any current version of Chrome, Edge, Firefox or Safari (desktop and mobile).
 Requires `AudioWorklet` and `getUserMedia` (Safari 14.5+).
 
+## Author
+
+Created and maintained by **Vahid Zekić** ([@vahidzekic](https://github.com/vahidzekic)).
+
 ## Contributing
 
 Contributions are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE) © Prichalica contributors
+[MIT](LICENSE) © 2026 Vahid Zekić

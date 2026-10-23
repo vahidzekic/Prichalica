@@ -491,3 +491,8 @@ button:focus-visible {
 .app__footer p {
   margin: 4px 0;
 }
+
+.app__footer a {
+  color: inherit;
+  font-weight: 600;
+}

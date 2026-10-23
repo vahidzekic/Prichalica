@@ -47,6 +47,8 @@ export const STRINGS = Object.freeze({
     'settings.sensitivityHint': 'Koliko glasnije od sobe treba da pričaš. Manje znači osetljivije.',
 
     'footer.privacy': 'Tvoj glas nikada ne napušta ovaj uređaj. Sav zvuk se obrađuje lokalno, u pregledaču.',
+    'footer.author': 'Autor: Vahid Zekić',
+    'footer.source': 'Izvorni kod na GitHubu',
     'footer.license': 'Otvoreni kod pod MIT licencom.',
 
     'error.blocked': 'Pristup mikrofonu je blokiran. Dozvoli ga u adresnoj traci i pokušaj ponovo.',
@@ -93,6 +95,8 @@ export const STRINGS = Object.freeze({
     'settings.sensitivityHint': 'How much louder than the room you need to be. Lower is more sensitive.',
 
     'footer.privacy': 'Your voice never leaves this device. All audio is processed locally in the browser.',
+    'footer.author': 'Created by Vahid Zekić',
+    'footer.source': 'Source code on GitHub',
     'footer.license': 'Open source under the MIT License.',
 
     'error.blocked': 'Microphone access was blocked. Allow it in the address bar and try again.',
