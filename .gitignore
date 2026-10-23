@@ -1,0 +1,35 @@
+# Dependencies (the app itself has none, but contributors may add tooling)
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Build / coverage output
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Recorded audio dumps from debugging sessions
+*.wav
+*.webm
+
+# Editors and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings
+.claude/

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Prichalica (Chatterbox): talk to it and it repeats what you said in a funny voice, like a talking toy. Runs entirely in your browser." />
+    <title>Prichalica</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐹</text></svg>" />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="app__header">
+        <h1>Prichalica</h1>
+        <p class="tagline">Say something, then pause. I'll say it right back!</p>
+      </header>
+
+      <section class="stage" aria-label="Talking toy">
+        <div id="buddy" class="buddy" data-state="idle" aria-hidden="true">🐹</div>
+        <p id="status" class="status" role="status" aria-live="polite">Press Start and allow the microphone.</p>
+
+        <div class="meter" aria-hidden="true">
+          <div id="meter-fill" class="meter__fill"></div>
+          <div id="meter-threshold" class="meter__threshold" hidden></div>
+        </div>
+
+        <button id="toggle" class="toggle" type="button">Start</button>
+      </section>
+
+      <details class="settings">
+        <summary>Settings</summary>
+
+        <label class="field">
+          <span>Character</span>
+          <select id="character">
+            <option value="🐹">Hamster</option>
+            <option value="🦜">Parrot</option>
+            <option value="🐱">Cat</option>
+            <option value="🐸">Frog</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Voice</span>
+          <select id="mode">
+            <option value="chipmunk">Chipmunk (faster and higher)</option>
+            <option value="pitch">Squeaky (higher, same speed)</option>
+            <option value="none">Plain echo</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Pitch <output id="semitones-value" for="semitones"></output></span>
+          <input id="semitones" type="range" min="0" max="12" step="1" />
+        </label>
+
+        <label class="field">
+          <span>Trigger level <output id="sensitivity-value" for="sensitivity"></output></span>
+          <input id="sensitivity" type="range" min="6" max="24" step="1" />
+          <small>How much louder than the room you need to be. Lower is more sensitive.</small>
+        </label>
+      </details>
+
+      <footer class="app__footer">
+        <p>Your voice never leaves this device. All audio is processed locally in the browser.</p>
+        <p>Open source under the MIT License.</p>
+      </footer>
+    </main>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>

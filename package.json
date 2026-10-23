@@ -1,0 +1,22 @@
+{
+  "name": "prichalica",
+  "version": "0.1.0",
+  "description": "Prichalica (Chatterbox): a talking-toy repeater that listens, waits for you to stop, and says it back in a funny high voice. Runs entirely in the browser.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "keywords": [
+    "web-audio",
+    "voice-activity-detection",
+    "pitch-shift",
+    "talking-toy",
+    "audioworklet"
+  ],
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
